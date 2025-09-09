@@ -1,0 +1,65 @@
+{
+    "name": "projectsaturnstudios/ssd1306-php",
+    "description": "PHP library for SSD1306 OLED displays - Object-oriented wrapper for the SSD1306 PHP extension",
+    "type": "library",
+    "license": "MIT",
+    "version": "1.0.0",
+    "keywords": [
+        "ssd1306",
+        "oled",
+        "display",
+        "i2c",
+        "jetson",
+        "embedded",
+        "hardware",
+        "yahboom",
+        "cube",
+        "adafruit"
+    ],
+    "homepage": "https://github.com/projectsaturnstudios/ssd1306",
+    "authors": [
+        {
+            "name": "Project Saturn Studios",
+            "email": "info@projectsaturnstudios.com",
+            "homepage": "https://projectsaturnstudios.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/projectsaturnstudios/ssd1306/issues",
+        "source": "https://github.com/projectsaturnstudios/ssd1306"
+    },
+    "require": {
+        "php": "^8.1",
+        "ext-ssd1306": "*"
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ProjectSaturnStudios\\SSD1306\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ProjectSaturnStudios\\SSD1306\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "test-coverage": "pest --coverage",
+        "test-unit": "pest tests/Unit",
+        "test-feature": "pest tests/Feature"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
