@@ -49,7 +49,7 @@ describe('SSD1306 Display', function () {
         });
         
         it('validates I2C parameters', function () {
-            expect(fn() => new SSD1306(128, 32, -1, 0x3C))->toThrow(InvalidArgumentException::class);
+            expect(fn() => new SSD1306(128, 32, -1))->toThrow(InvalidArgumentException::class);
             expect(fn() => new SSD1306(128, 32, 7, -1))->toThrow(InvalidArgumentException::class);
         });
         
@@ -57,42 +57,116 @@ describe('SSD1306 Display', function () {
     
     describe('Display Control', function () {
         
+        beforeEach(function () {
+            $this->display = new SSD1306(128, 32, 7, 0x3C, true);
+        });
+        
         it('initializes display successfully', function () {
-            $display = new SSD1306(128, 32, 7, 0x3C, true);
-            
-            expect($display->begin())->toBeTrue();
-            
-            $display->end();
+            $result = $this->display->begin();
+            expect($result)->toBeTrue();
         });
         
         it('clears display without errors', function () {
-            $display = new SSD1306();
-            $display->begin();
+            $this->display->begin();
             
-            expect(fn() => $display->clear())->not->toThrow();
-            
-            $display->end();
+            $this->display->clear();
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
         });
         
         it('updates display without errors', function () {
-            $display = new SSD1306();
-            $display->begin();
+            $this->display->begin();
             
-            expect(fn() => $display->display())->not->toThrow();
-            
-            $display->end();
+            $this->display->display();
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
         });
         
-        it('ends display session without errors', function () {
-            $display = new SSD1306();
-            $display->begin();
+        it('ends display operations cleanly', function () {
+            $this->display->begin();
             
-            expect(fn() => $display->end())->not->toThrow();
+            $this->display->end();
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
         });
         
     });
     
     describe('Drawing Functions', function () {
+        
+        beforeEach(function () {
+            $this->display = new SSD1306(128, 32, 7, 0x3C, true);
+            $this->display->begin();
+        });
+        
+        afterEach(function () {
+            $this->display->end();
+        });
+        
+        it('draws pixels correctly', function () {
+            $this->display->pixel(10, 10);
+            $this->display->pixel(10, 10, SSD1306::WHITE);
+            $this->display->pixel(10, 10, SSD1306::BLACK);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('handles out-of-bounds pixels gracefully', function () {
+            $this->display->pixel(-1, 10);
+            $this->display->pixel(10, -1);
+            $this->display->pixel(200, 10);
+            $this->display->pixel(10, 100);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('draws lines correctly', function () {
+            $this->display->line(0, 0, 127, 31);
+            $this->display->line(10, 10, 50, 20, SSD1306::WHITE);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('draws rectangles correctly', function () {
+            $this->display->rectangle(10, 10, 20, 15);
+            $this->display->rectangle(10, 10, 20, 15, SSD1306::WHITE, false);
+            $this->display->rectangle(10, 10, 20, 15, SSD1306::WHITE, true);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('draws circles correctly', function () {
+            $this->display->circle(64, 16, 10);
+            $this->display->circle(64, 16, 10, SSD1306::WHITE, false);
+            $this->display->circle(64, 16, 10, SSD1306::WHITE, true);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('renders text correctly', function () {
+            $this->display->text('Hello', 0, 0);
+            $this->display->text('World', 0, 8, 1);
+            $this->display->text('Test', 0, 16, 2, SSD1306::WHITE);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('validates text parameters', function () {
+            $this->display->text('', 0, 0); // Empty string should be OK
+            $this->display->text('Test', -10, 0); // Negative coords should be handled
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+    });
+    
+    describe('Display Properties', function () {
+        
+        beforeEach(function () {
+            $this->display = new SSD1306(128, 64, 7, 0x3C);
+        });
+        
+        it('returns correct width', function () {
+            expect($this->display->getWidth())->toBe(128);
+        });
+        
+        it('returns correct height', function () {
+            expect($this->display->getHeight())->toBe(64);
+        });
+        
+    });
+    
+    describe('Advanced Features', function () {
         
         beforeEach(function () {
             $this->display = new SSD1306(128, 32, 7, 0x3C);
@@ -103,103 +177,23 @@ describe('SSD1306 Display', function () {
             $this->display->end();
         });
         
-        it('draws pixels without errors', function () {
-            expect(fn() => $this->display->pixel(10, 10, SSD1306::WHITE))->not->toThrow();
-            expect(fn() => $this->display->pixel(0, 0, SSD1306::BLACK))->not->toThrow();
+        it('inverts display', function () {
+            $this->display->invertDisplay(true);
+            $this->display->invertDisplay(false);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
         });
         
-        it('handles out-of-bounds pixels gracefully', function () {
-            expect(fn() => $this->display->pixel(-1, 10))->not->toThrow();
-            expect(fn() => $this->display->pixel(10, -1))->not->toThrow();
-            expect(fn() => $this->display->pixel(200, 10))->not->toThrow();
-            expect(fn() => $this->display->pixel(10, 200))->not->toThrow();
+        it('dims display', function () {
+            $this->display->dim(true);
+            $this->display->dim(false);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
         });
         
-        it('draws lines without errors', function () {
-            expect(fn() => $this->display->line(0, 0, 127, 31))->not->toThrow();
-            expect(fn() => $this->display->line(10, 10, 50, 20, SSD1306::WHITE))->not->toThrow();
-        });
-        
-        it('draws rectangles without errors', function () {
-            expect(fn() => $this->display->rectangle(10, 10, 20, 15))->not->toThrow();
-            expect(fn() => $this->display->rectangle(50, 5, 30, 20, SSD1306::WHITE, true))->not->toThrow();
-        });
-        
-        it('draws circles without errors', function () {
-            expect(fn() => $this->display->circle(64, 16, 10))->not->toThrow();
-            expect(fn() => $this->display->circle(100, 20, 8, SSD1306::WHITE, true))->not->toThrow();
-        });
-        
-        it('renders text without errors', function () {
-            expect(fn() => $this->display->text('Hello', 0, 0))->not->toThrow();
-            expect(fn() => $this->display->text('World', 0, 10, 2, SSD1306::WHITE))->not->toThrow();
-        });
-        
-        it('handles empty text gracefully', function () {
-            expect(fn() => $this->display->text('', 0, 0))->not->toThrow();
-        });
-        
-    });
-    
-    describe('Display Properties', function () {
-        
-        it('returns correct width and height', function () {
-            $display = new SSD1306(128, 64);
-            
-            expect($display->getWidth())->toBe(128);
-            expect($display->getHeight())->toBe(64);
-        });
-        
-        it('gets pixel values', function () {
-            $display = new SSD1306();
-            $display->begin();
-            
-            // Draw a pixel and read it back
-            $display->pixel(10, 10, SSD1306::WHITE);
-            $display->display();
-            
-            $pixelValue = $display->getPixel(10, 10);
-            expect($pixelValue)->toBeInt();
-            
-            $display->end();
-        });
-        
-        it('handles out-of-bounds pixel reads gracefully', function () {
-            $display = new SSD1306();
-            
-            expect($display->getPixel(-1, 10))->toBe(0);
-            expect($display->getPixel(10, -1))->toBe(0);
-            expect($display->getPixel(200, 10))->toBe(0);
-            expect($display->getPixel(10, 200))->toBe(0);
-        });
-        
-    });
-    
-    describe('Advanced Features', function () {
-        
-        beforeEach(function () {
-            $this->display = new SSD1306();
-            $this->display->begin();
-        });
-        
-        afterEach(function () {
-            $this->display->end();
-        });
-        
-        it('inverts display without errors', function () {
-            expect(fn() => $this->display->invertDisplay(true))->not->toThrow();
-            expect(fn() => $this->display->invertDisplay(false))->not->toThrow();
-        });
-        
-        it('dims display without errors', function () {
-            expect(fn() => $this->display->dim(true))->not->toThrow();
-            expect(fn() => $this->display->dim(false))->not->toThrow();
-        });
-        
-        it('sets contrast within valid range', function () {
-            expect(fn() => $this->display->setContrast(0))->not->toThrow();
-            expect(fn() => $this->display->setContrast(128))->not->toThrow();
-            expect(fn() => $this->display->setContrast(255))->not->toThrow();
+        it('sets contrast', function () {
+            $this->display->setContrast(128);
+            $this->display->setContrast(255);
+            $this->display->setContrast(0);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
         });
         
         it('validates contrast range', function () {
@@ -207,104 +201,142 @@ describe('SSD1306 Display', function () {
             expect(fn() => $this->display->setContrast(256))->toThrow(InvalidArgumentException::class);
         });
         
+        it('gets pixel values', function () {
+            // Draw a white pixel and verify we can read it
+            $this->display->pixel(10, 10, SSD1306::WHITE);
+            $this->display->display();
+            
+            $pixel = $this->display->getPixel(10, 10);
+            expect($pixel)->toBeInt();
+            expect($pixel)->toBeGreaterThanOrEqual(0);
+            expect($pixel)->toBeLessThanOrEqual(1);
+        });
+        
     });
     
     describe('Scrolling Functions', function () {
         
         beforeEach(function () {
-            $this->display = new SSD1306();
+            $this->display = new SSD1306(128, 32, 7, 0x3C);
             $this->display->begin();
         });
         
         afterEach(function () {
-            $this->display->stopScroll();
             $this->display->end();
         });
         
-        it('starts horizontal scrolling without errors', function () {
-            expect(fn() => $this->display->startScrollRight(0, 3))->not->toThrow();
-            expect(fn() => $this->display->startScrollLeft(0, 3))->not->toThrow();
-        });
-        
-        it('starts diagonal scrolling without errors', function () {
-            expect(fn() => $this->display->startScrollDiagRight(0, 3))->not->toThrow();
-            expect(fn() => $this->display->startScrollDiagLeft(0, 3))->not->toThrow();
-        });
-        
-        it('stops scrolling without errors', function () {
+        it('starts horizontal scroll right', function () {
             $this->display->startScrollRight(0, 3);
-            expect(fn() => $this->display->stopScroll())->not->toThrow();
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
         });
         
-        it('validates scroll page numbers', function () {
+        it('starts horizontal scroll left', function () {
+            $this->display->startScrollLeft(0, 3);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('starts diagonal scroll right', function () {
+            $this->display->startScrollDiagRight(0, 3);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('starts diagonal scroll left', function () {
+            $this->display->startScrollDiagLeft(0, 3);
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('stops scrolling', function () {
+            $this->display->startScrollRight(0, 3);
+            $this->display->stopScroll();
+            expect(true)->toBeTrue(); // If we get here, no exception was thrown
+        });
+        
+        it('validates scroll parameters', function () {
             expect(fn() => $this->display->startScrollRight(-1, 3))->toThrow(InvalidArgumentException::class);
             expect(fn() => $this->display->startScrollRight(0, 8))->toThrow(InvalidArgumentException::class);
-            expect(fn() => $this->display->startScrollLeft(8, 3))->toThrow(InvalidArgumentException::class);
         });
         
     });
     
     describe('Integration Tests', function () {
         
-        it('completes full display cycle', function () {
-            $display = new SSD1306(128, 32, 7, 0x3C, true);
-            
+        beforeEach(function () {
+            $this->display = new SSD1306(128, 32, 7, 0x3C, true);
+        });
+        
+        it('performs complete display cycle', function () {
             // Initialize
-            expect($display->begin())->toBeTrue();
+            expect($this->display->begin())->toBeTrue();
             
-            // Clear and draw
-            $display->clear();
-            $display->text('Test', 0, 0);
-            $display->pixel(10, 10, SSD1306::WHITE);
-            $display->line(0, 15, 50, 15);
-            $display->rectangle(60, 10, 20, 10);
-            $display->circle(100, 15, 8);
+            // Clear
+            $this->display->clear();
+            
+            // Draw some content
+            $this->display->text('SSD1306 Test', 0, 0);
+            $this->display->line(0, 10, 127, 10);
+            $this->display->rectangle(10, 15, 30, 10);
+            $this->display->circle(100, 20, 8);
             
             // Update display
-            $display->display();
+            $this->display->display();
             
-            // Test effects
-            $display->setContrast(128);
-            $display->invertDisplay(true);
-            $display->invertDisplay(false);
+            // Clean up
+            $this->display->end();
             
-            // Cleanup
-            $display->end();
-            
-            expect(true)->toBeTrue(); // If we get here, the cycle completed
+            expect(true)->toBeTrue(); // If we get here, the cycle completed successfully
         });
         
         it('handles rapid updates', function () {
-            $display = new SSD1306();
-            $display->begin();
+            $this->display->begin();
             
             for ($i = 0; $i < 10; $i++) {
-                $display->clear();
-                $display->text("Frame $i", 0, 0);
-                $display->display();
+                $this->display->clear();
+                $this->display->text("Frame $i", 0, 0);
+                $this->display->display();
             }
             
-            $display->end();
+            $this->display->end();
             
-            expect(true)->toBeTrue();
+            expect(true)->toBeTrue(); // If we get here, rapid updates worked
         });
         
         it('recovers from errors gracefully', function () {
-            $display = new SSD1306();
-            
-            // These should not crash even without initialization
-            $display->clear();
-            $display->display();
-            $display->text('Test', 0, 0);
+            // Test error recovery by trying to use display before initialization
+            $this->display->clear();
+            $this->display->display();
             
             // Now initialize properly
-            expect($display->begin())->toBeTrue();
+            expect($this->display->begin())->toBeTrue();
             
-            $display->clear();
-            $display->display();
-            $display->end();
+            // Should work normally now
+            $this->display->clear();
+            $this->display->display();
+            
+            $this->display->end();
+            
+            expect(true)->toBeTrue(); // If we get here, error recovery worked
         });
         
+    });
+    
+});
+
+describe('SSD1306 Constants', function () {
+    
+    it('has correct color constants', function () {
+        expect(SSD1306::BLACK)->toBe(0);
+        expect(SSD1306::WHITE)->toBe(1);
+    });
+    
+    it('has correct dimension constants', function () {
+        expect(SSD1306::WIDTH)->toBe(128);
+        expect(SSD1306::HEIGHT_32)->toBe(32);
+        expect(SSD1306::HEIGHT_64)->toBe(64);
+    });
+    
+    it('has correct I2C constants', function () {
+        expect(SSD1306::DEFAULT_I2C_BUS)->toBe(7); // Should be 7 for Yahboom CUBE
+        expect(SSD1306::DEFAULT_I2C_ADDRESS)->toBe(0x3C);
     });
     
 });

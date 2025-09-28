@@ -55,30 +55,32 @@ while ($running) {
         }
     }
 
-    // Clear and draw stars
+    // Draw frame
     $display->clear();
-    foreach ($stars as $star) {
-        $display->pixel($star['x'], $star['y'], SSD1306::WHITE);
-        
-        // Add trail for fast stars
-        if ($star['z'] >= 3 && $star['x'] - 1 >= 0) {
-            $display->pixel($star['x'] - 1, $star['y'], SSD1306::WHITE);
+
+    foreach ($stars as $s) {
+        $x = (int)$s['x'];
+        $y = (int)$s['y'];
+        $z = (int)$s['z'];
+
+        // Main star pixel
+        $display->pixel($x, $y, SSD1306::WHITE);
+
+        // Simple trail for fast stars (1px tail)
+        if ($z >= 2 && $x - 1 >= 0) {
+            $display->pixel($x - 1, $y, SSD1306::WHITE);
+        }
+        if ($z >= 3 && $x - 2 >= 0) {
+            $display->pixel($x - 2, $y, SSD1306::WHITE);
         }
     }
-    
+
     $display->display();
-    
-    // Check for signals
+
     if (function_exists('pcntl_signal_dispatch')) {
         pcntl_signal_dispatch();
     }
-    
+
     usleep($FPS_DELAY_US);
 }
 
-// Clean exit
-$display->clear();
-$display->display();
-$display->end();
-
-echo "\nStarfield demo ended.\n";

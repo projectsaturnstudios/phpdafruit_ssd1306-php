@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 /**
  * PHP port of Adafruit Python SSD1306 library
- * 
+ *
  * This class provides an intermediate layer between PHP and the ssd1306 extension,
  * implementing the same pattern as the Python Adafruit_SSD1306 library:
  * - Creates an image buffer using GD
@@ -21,23 +21,23 @@ class SSD1306
     public const WIDTH = 128;
     public const HEIGHT_32 = 32;
     public const HEIGHT_64 = 64;
-    
+
     // Colors
     public const BLACK = 0;
     public const WHITE = 1;
-    
+
     // Default I2C settings (Yahboom CUBE uses bus 7)
     public const DEFAULT_I2C_BUS = 7;
     public const DEFAULT_I2C_ADDRESS = 0x3C;
-    
+
     private int $width;
     private int $height;
     private int $i2cBus;
     private int $i2cAddress;
     private bool $debug;
-    
+
     // Extension handles the internal buffer
-    
+
     public function __construct(
         int $width = self::WIDTH,
         int $height = self::HEIGHT_32,
@@ -48,7 +48,7 @@ class SSD1306
         if (!extension_loaded('ssd1306')) {
             throw new RuntimeException('SSD1306 extension not found. Please install the ssd1306 PHP extension.');
         }
-        
+
         // Validate parameters
         if ($width <= 0) {
             throw new InvalidArgumentException('Width must be greater than 0');
@@ -62,25 +62,25 @@ class SSD1306
         if ($i2cAddress < 0) {
             throw new InvalidArgumentException('I2C address must be non-negative');
         }
-        
+
         $this->width = $width;
         $this->height = $height;
         $this->i2cBus = $i2cBus;
         $this->i2cAddress = $i2cAddress;
         $this->debug = $debug;
-        
+
         if ($this->debug) {
             echo "SSD1306 constructor: {$width}x{$height} display\n";
         }
-        
+
         // Extension handles the buffer internally
     }
-    
+
     public function __destruct()
     {
         // Extension handles cleanup
     }
-    
+
     /**
      * Initialize the display - equivalent to Python's begin()
      */
@@ -89,14 +89,14 @@ class SSD1306
         try {
             // Use SWITCHCAPVCC (2) like Adafruit default so the charge pump is enabled
             \ssd1306_begin($this->i2cBus, $this->i2cAddress, $this->width, $this->height, 2);
-            
+
             if ($this->debug) {
                 echo "SSD1306 initialized on I2C bus {$this->i2cBus}, address 0x" . dechex($this->i2cAddress) . "\n";
             }
-            
+
             $this->clear();
             $this->display();
-            
+
             return true;
         } catch (\Throwable $e) {
             if ($this->debug) {
@@ -105,7 +105,7 @@ class SSD1306
             return false;
         }
     }
-    
+
     /**
      * Clear the display - equivalent to Python's clear()
      */
@@ -113,7 +113,7 @@ class SSD1306
     {
         \ssd1306_clear_display();
     }
-    
+
     /**
      * Push the image buffer to the display - equivalent to Python's image()
      */
@@ -122,7 +122,7 @@ class SSD1306
         // Just update the hardware display - the extension handles the buffer
         \ssd1306_display();
     }
-    
+
     /**
      * Draw text directly to the display - like Python's text()
      */
@@ -133,7 +133,7 @@ class SSD1306
         \ssd1306_set_text_color($color);
         \ssd1306_print($text);
     }
-    
+
     /**
      * Draw a pixel
      */
@@ -142,10 +142,10 @@ class SSD1306
         if ($x < 0 || $x >= $this->width || $y < 0 || $y >= $this->height) {
             return;
         }
-        
+
         \ssd1306_draw_pixel($x, $y, $color);
     }
-    
+
     /**
      * Draw a line
      */
@@ -153,7 +153,7 @@ class SSD1306
     {
         \ssd1306_draw_line($x0, $y0, $x1, $y1, $color);
     }
-    
+
     /**
      * Draw a rectangle
      */
@@ -165,7 +165,7 @@ class SSD1306
             \ssd1306_draw_rect($x, $y, $width, $height, $color);
         }
     }
-    
+
     /**
      * Draw a circle
      */
@@ -177,7 +177,7 @@ class SSD1306
             \ssd1306_draw_circle($x, $y, $radius, $color);
         }
     }
-    
+
     /**
      * Get display dimensions
      */
@@ -185,12 +185,12 @@ class SSD1306
     {
         return $this->width;
     }
-    
+
     public function getHeight(): int
     {
         return $this->height;
     }
-    
+
     /**
      * Invert display colors - equivalent to Python's invert()
      */
@@ -198,7 +198,7 @@ class SSD1306
     {
         \ssd1306_invert_display($invert);
     }
-    
+
     /**
      * Dim the display - equivalent to Python's dim()
      */
@@ -206,7 +206,7 @@ class SSD1306
     {
         \ssd1306_dim($dim);
     }
-    
+
     /**
      * Set display contrast - equivalent to Python's set_contrast()
      */
@@ -217,7 +217,7 @@ class SSD1306
         }
         \ssd1306_set_contrast($contrast);
     }
-    
+
     /**
      * Get pixel value at coordinates - equivalent to Python's get_pixel()
      */
@@ -228,7 +228,7 @@ class SSD1306
         }
         return \ssd1306_get_pixel($x, $y);
     }
-    
+
     /**
      * Start horizontal scroll right - equivalent to Python's start_scroll_right()
      */
@@ -239,7 +239,7 @@ class SSD1306
         }
         \ssd1306_start_scroll_right($startPage, $endPage);
     }
-    
+
     /**
      * Start horizontal scroll left - equivalent to Python's start_scroll_left()
      */
@@ -250,7 +250,7 @@ class SSD1306
         }
         \ssd1306_start_scroll_left($startPage, $endPage);
     }
-    
+
     /**
      * Start diagonal scroll right - equivalent to Python's start_scroll_diag_right()
      */
@@ -261,7 +261,7 @@ class SSD1306
         }
         \ssd1306_start_scroll_diag_right($startPage, $endPage);
     }
-    
+
     /**
      * Start diagonal scroll left - equivalent to Python's start_scroll_diag_left()
      */
@@ -272,7 +272,7 @@ class SSD1306
         }
         \ssd1306_start_scroll_diag_left($startPage, $endPage);
     }
-    
+
     /**
      * Stop scrolling - equivalent to Python's stop_scroll()
      */
@@ -280,7 +280,7 @@ class SSD1306
     {
         \ssd1306_stop_scroll();
     }
-    
+
     /**
      * End display operations
      */
@@ -288,5 +288,9 @@ class SSD1306
     {
         \ssd1306_end();
     }
-    
+
+    public function __destruct()
+    {
+        // Extension handles cleanup
+    }
 }

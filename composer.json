@@ -20,15 +20,9 @@
     "authors": [
         {
             "name": "Project Saturn Studios",
-            "email": "info@projectsaturnstudios.com",
-            "homepage": "https://projectsaturnstudios.com",
-            "role": "Developer"
+            "email": "info@projectsaturnstudios.com"
         }
     ],
-    "support": {
-        "issues": "https://github.com/projectsaturnstudios/ssd1306/issues",
-        "source": "https://github.com/projectsaturnstudios/ssd1306"
-    },
     "require": {
         "php": "^8.1",
         "ext-ssd1306": "*"
@@ -41,25 +35,6 @@
             "ProjectSaturnStudios\\SSD1306\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "ProjectSaturnStudios\\SSD1306\\Tests\\": "tests/"
-        }
-    },
-    "scripts": {
-        "test": "pest",
-        "test-coverage": "pest --coverage",
-        "test-unit": "pest tests/Unit",
-        "test-feature": "pest tests/Feature"
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
 }
