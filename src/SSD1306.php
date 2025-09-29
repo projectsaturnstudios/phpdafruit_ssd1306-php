@@ -288,9 +288,4 @@ class SSD1306
     {
         \ssd1306_end();
     }
-
-    public function __destruct()
-    {
-        // Extension handles cleanup
-    }
 }

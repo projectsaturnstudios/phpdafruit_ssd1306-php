@@ -12,6 +12,7 @@ php examples/hello_extension.php
 php examples/graphics_demo.php
 php examples/system_stats.php
 php examples/starfield.php
+php examples/comprehensive_test.php
 ```
 
 ## 📁 Example Files
@@ -60,6 +61,22 @@ php examples/starfield.php
 - Optimized for 128x32 displays
 
 **Run**: `php examples/starfield.php`
+
+### `comprehensive_test.php` - Complete Feature Test Suite
+**Purpose**: Comprehensive testing and demonstration of all SSD1306-PHP capabilities  
+**Features**:
+- All drawing functions with real-time feedback
+- Bouncing ball animation (50 frames)
+- Live system information display (CPU, temp, RAM, disk)
+- Scrolling effects (left and right)
+- Pixel art creation (smiley face)
+- Display effects (invert, contrast variations)
+- Complex geometric patterns
+- Text size variations
+- Grand finale animation with progress bar
+- Fade-out cleanup effect
+
+**Run**: `php examples/comprehensive_test.php`
 
 ## 🔧 Hardware Requirements
 
@@ -153,9 +170,10 @@ ls -la /usr/lib/php/*/ssd1306.so
 **Recommended order for learning**:
 
 1. **`hello_extension.php`** - Understand basic hardware communication
-2. **`graphics_demo.php`** - Learn all drawing functions and effects
-3. **`system_stats.php`** - See practical real-world application
-4. **`starfield.php`** - Explore animation and optimization techniques
+2. **`comprehensive_test.php`** - See all features in action with entertaining tests
+3. **`graphics_demo.php`** - Learn individual drawing functions and effects
+4. **`system_stats.php`** - See practical real-world application
+5. **`starfield.php`** - Explore animation and optimization techniques
 
 ## 🔗 Integration Examples
 
