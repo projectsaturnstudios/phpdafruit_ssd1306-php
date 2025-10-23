@@ -2,7 +2,7 @@
 	"name": "phpdafruit/ssd1306-php",
     "description": "Comprehensive PHP library for SSD1306 OLED displays with animations, state machines, UI components, and effects. Production-ready with 450+ tests.",
 	"type": "library",
-	"version": "1.0.0",
+	"version": "2.0.1",
 	"license": "MIT",
     "keywords": [
         "ssd1306",
